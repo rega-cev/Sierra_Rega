@@ -77,7 +77,7 @@ def main(argv):
 
     # Per 1000 sequences, do a Stanford analysis
     for i in range(0,nrLoops):
-        headers = list( f.keys()[i] for i in range(i*1000,(i*1000) + 1000) )
+        headers = list( f.keys()[j] for j in range(i*1000,(i*1000) + 1000) )
         pool = mp.Pool(processes=100)
         results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], output_file, graphQL_query_file,)) for header in headers]
         tmp = open(output_file, 'a')
@@ -87,7 +87,7 @@ def main(argv):
 
     #print nrLoops*1000 + ((nrLoops + len(f.keys())) % 1000)
     # Do the Stanford analysis for the last sequences available
-    headers = list( f.keys()[j] for j in range(nrLoops*1000,(nrLoops*1000 + ((nrLoops + len(f.keys())) % 1000) - 1)))
+    headers = list( f.keys()[j] for j in range(nrLoops*1000,(nrLoops*1000 + (len(f.keys()) % 1000))))
     pool = mp.Pool(processes=100)
     results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], output_file, graphQL_query_file,)) for header in headers]
     tmp = open(output_file, 'a')

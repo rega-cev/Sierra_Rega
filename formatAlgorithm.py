@@ -22,7 +22,7 @@ def generateCSVLine(seq_name,input_file):
     with open(input_file) as data_file:
         try:
             data = json.load(data_file)
-        except Exception as e:
+        except ValueError:
             return seq_name + ","
 
     #SIR = data[0]["algorithmComparison"][0]["drugScores"][0]["SIR"].strip()

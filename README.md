@@ -7,6 +7,7 @@ How to use the new project?
 
 in short: 
 ```pip install sierrapy```
+
 2. Prepare your fasta file (input.fasta) and run the following command from your command line:
 ```python looper.py -i input.fasta -o output.csv```
 

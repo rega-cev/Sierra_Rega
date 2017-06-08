@@ -1,0 +1,12 @@
+algorithmComparison(algorithms: [HIVDB, REGA, ANRS]) {
+        drugClass {
+		name
+	}
+	drugScores {
+		drug {name, displayAbbr}
+		algorithm
+        	SIR
+        	interpretation
+       		explanation
+	}
+}

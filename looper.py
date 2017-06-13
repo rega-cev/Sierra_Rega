@@ -6,7 +6,7 @@ from multiprocessing import Pool, Value, Process
 from formatMutations import getMutations
 from formatAlgorithm import generateCSVHeader, generateCSVLine
 
-def doStanfordAnalysis(header, sequence, output_file, graphQL_query_file):
+def doStanfordAnalysis(header, sequence, graphQL_query_file):
     # global counter
     # += operation is not atomic, so we need to get a lock:
     # with counter.get_lock():
@@ -39,13 +39,13 @@ def doStanfordAnalysis(header, sequence, output_file, graphQL_query_file):
     #tmp = open(output_file, 'a')
     #tmp.write(generateCSVLine(str(header), "output." + str(i) + ".json") + "\n")
     #tmp.close()
-    print "Working on: " + str(header)
+    #print "Working on: " + str(header)
     csvLine = generateCSVLine(str(header), temp_path3)
     if csvLine is not None:
-        toReturn = str(csvLine + "\n")
+        toReturn = str(csvLine)
     else:
         toReturn = str(header + ',')
-    print toReturn
+    #print toReturn
     #os.remove("input." + str(counter.value) + ".json")
     #os.remove("output." + str(counter.value) + ".json")
 
@@ -59,17 +59,13 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Interpret FASTA file with Stanford service.')
     requiredNamed = parser.add_argument_group('required named arguments')
     requiredNamed.add_argument('-i', '--input', dest='input_file', help='Input file name', required=True)
-    requiredNamed.add_argument('-o', '--output', dest='output_file', help='Output file name', required=True)
     requiredNamed.add_argument('-q', '--query', dest='graphQL_query_file', help='GraphQL query file', required=True)
     #parser.parse_args(['-h'])
     results = parser.parse_args(argv)
     input_file = results.input_file
-    output_file = results.output_file
     graphQL_query_file = results.graphQL_query_file
 
-    tmp = open(output_file, 'w')
-    tmp.write(generateCSVHeader())
-    tmp.close()
+    print generateCSVHeader()
 
     f = pyfasta.Fasta(input_file)
 
@@ -78,22 +74,24 @@ def main(argv):
     # Per 1000 sequences, do a Stanford analysis
     for i in range(0,nrLoops):
         headers = list( f.keys()[j] for j in range(i*1000,(i*1000) + 1000) )
-        pool = mp.Pool(processes=100)
-        results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], output_file, graphQL_query_file,)) for header in headers]
-        tmp = open(output_file, 'a')
+        pool = mp.Pool(processes=20)
+        results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], graphQL_query_file,)) for header in headers]
+        #tmp = open(output_file, 'a')
         for p in results:
-            tmp.write(p.get())
-        tmp.close()
+            print p.get()
+        #    tmp.write(p.get())
+        #tmp.close()
 
     #print nrLoops*1000 + ((nrLoops + len(f.keys())) % 1000)
     # Do the Stanford analysis for the last sequences available
     headers = list( f.keys()[j] for j in range(nrLoops*1000,(nrLoops*1000 + (len(f.keys()) % 1000))))
-    pool = mp.Pool(processes=100)
-    results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], output_file, graphQL_query_file,)) for header in headers]
-    tmp = open(output_file, 'a')
+    pool = mp.Pool(processes=20)
+    results = [pool.apply_async(doStanfordAnalysis, args=(header, f[header], graphQL_query_file,)) for header in headers]
+    #tmp = open(output_file, 'a')
     for p in results:
-        tmp.write(p.get())
-    tmp.close()
+        print p.get()
+    #    tmp.write(p.get())
+    #tmp.close()
 
         #print "First " + str(i*1000) + " done."
         #for j in range(i*1000,(i*1000) + 1000):

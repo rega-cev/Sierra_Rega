@@ -15,7 +15,7 @@ def generateCSVHeader():
         stringToReturn += ALLDrugs[i] + "_SIR" + ","
         #ALLDrugs[i] + "_level" + "," +
         #ALLDrugs[i] + "_score" + ","
-    stringToReturn += "\n"
+    #stringToReturn += "\n"
     return stringToReturn
 
 def generateCSVLine(seq_name,input_file):
